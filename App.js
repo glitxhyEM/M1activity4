@@ -131,7 +131,8 @@ export default function App() {
 
       // 3. Save URI if user didn't cancel
       if (!result.canceled && result.assets && result.assets.length > 0) {
-        setSelectedImage(result.assets[0].uri);
+        const optimizedUri = optimizeImageUri(result.assets[0].uri);
+        setSelectedImage(optimizedUri);
       }
     } catch (error) {
       console.error('Camera error:', error);
@@ -171,8 +172,9 @@ export default function App() {
         quality: 0.8,
       });
 
-      if (!result.canceled) {
-        setSelectedImage(result.assets[0].uri);
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        const optimizedUri = optimizeImageUri(result.assets[0].uri);
+        setSelectedImage(optimizedUri);
       }
     } catch (error) {
       Alert.alert('Error', 'Failed to select photo');
