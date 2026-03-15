@@ -58,16 +58,16 @@ export default function App() {
   // const { status } = await ImagePicker.requestCameraPermissionsAsync();
   // if (status === 'granted') { return true; } else { /* handle denial */ }
   //
+  // TODO #1: Request camera permission
   const requestCameraPermission = async () => {
     try {
-      // 1. Request permission from user
+      // Request permission from user
       const { status } = await ImagePicker.requestCameraPermissionsAsync();
 
-      // 2. Check if granted
       if (status === 'granted') {
         return true; // Permission granted!
       } else {
-        // 3. Handle denial
+        // Permission denied - show helpful prompt
         setShowPermissionPrompt(true);
         Alert.alert(
           'Camera Permission Needed',
@@ -114,17 +114,28 @@ export default function App() {
   // });
   // if (!result.canceled) { /* process result */ }
   //
+  // TODO #2: Launch camera and capture photo
   const handleTakePhoto = async () => {
     try {
-      // TODO: Your code here
-      // 1. Check permission
-      // 2. Launch camera
-      // 3. Handle result
+      // 1. Check permission first
+      const hasPermission = await requestCameraPermission();
+      if (!hasPermission) return;
 
-      console.log('TODO: Implement camera launch');
+      // 2. Launch camera with config
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.8,
+      });
+
+      // 3. Save URI if user didn't cancel
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        setSelectedImage(result.assets[0].uri);
+      }
     } catch (error) {
       console.error('Camera error:', error);
-      showAlert('Error', 'Failed to open camera. Please try again.');
+      Alert.alert('Error', 'Failed to take photo.');
     }
   };
 
@@ -147,15 +158,24 @@ export default function App() {
   //
   const handleChoosePhoto = async () => {
     try {
-      // TODO: Your code here (similar to handleTakePhoto)
-      // 1. Request library permission
-      // 2. Launch library
-      // 3. Handle result
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission Needed', 'Please enable photo library access');
+        return;
+      }
 
-      console.log('TODO: Implement library selection');
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.8,
+      });
+
+      if (!result.canceled) {
+        setSelectedImage(result.assets[0].uri);
+      }
     } catch (error) {
-      console.error('Library error:', error);
-      showAlert('Error', 'Failed to access photo library. Please try again.');
+      Alert.alert('Error', 'Failed to select photo');
     }
   };
 
