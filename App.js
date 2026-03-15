@@ -214,14 +214,21 @@ export default function App() {
             </Text>
           </View>
 
-          {/* Image Preview Area */}
+          {/* TODO #3: Display image when selectedImage exists */}
           <View style={styles.previewSection}>
             {selectedImage ? (
-              <ImagePreview uri={selectedImage} onClear={handleClearImage} />
+              // Show image if one is selected
+              <ImagePreview
+                uri={selectedImage}
+                onClear={() => setSelectedImage(null)}
+              />
             ) : (
+              // Show placeholder if no image
               <View style={styles.placeholder}>
                 <Text style={styles.placeholderIcon}>📷</Text>
-                <Text style={styles.placeholderText}>No image selected yet</Text>
+                <Text style={styles.placeholderText}>
+                  No image selected yet
+                </Text>
                 <Text style={styles.placeholderSubtext}>
                   Take a photo or choose from library
                 </Text>
