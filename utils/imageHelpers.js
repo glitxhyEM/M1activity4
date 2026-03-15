@@ -13,17 +13,15 @@
 export const optimizeImageUri = (uri) => {
   if (!uri) return null;
 
-  // Ensure proper URI format for React Native Image component
-  if (uri.startsWith('file://')) {
+  // React Native 'Image' on Web might return blob: or data: URIs.
+  // Native returns file://, content://, or ph:// URIs.
+  const validPrefixes = ['file://', 'http', 'data:', 'blob:', 'content:', 'ph:'];
+  if (validPrefixes.some(prefix => uri.startsWith(prefix))) {
     return uri;
   }
 
-  // Add file:// prefix if missing (Android compatibility)
-  if (!uri.startsWith('http') && !uri.startsWith('file://')) {
-    return `file://${uri}`;
-  }
-
-  return uri;
+  // Fallback: Add file:// prefix if absolutely necessary for Android compatibility
+  return `file://${uri}`;
 };
 
 /**
