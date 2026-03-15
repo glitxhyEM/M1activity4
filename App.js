@@ -127,11 +127,19 @@ export default function App() {
         allowsEditing: true,
         aspect: [4, 3],
         quality: 0.8,
+        base64: true,
       });
 
       // 3. Save URI if user didn't cancel
       if (!result.canceled && result.assets && result.assets.length > 0) {
-        const optimizedUri = optimizeImageUri(result.assets[0].uri);
+        let uri = result.assets[0].uri;
+
+        // Ensure web base64 output or blob renders properly
+        if (Platform.OS === 'web' && result.assets[0].base64) {
+          uri = `data:image/jpeg;base64,${result.assets[0].base64}`;
+        }
+
+        const optimizedUri = optimizeImageUri(uri);
         setSelectedImage(optimizedUri);
       }
     } catch (error) {
